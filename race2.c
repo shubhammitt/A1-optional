@@ -29,7 +29,6 @@ void foo(void *ptr)
 	val++;
 	counter = val;
 	thread_yield();
-
 	thread_exit();
 }
 
