@@ -26,7 +26,7 @@ test: app
 	./app 1024 1
 
 test2:
-	/usr/bin/time -v ./leak 102400 2>&1 |egrep "kbytes|counter"
+	/usr/bin/time -v ./leak 1024000 2>&1 |egrep "kbytes|counter"
 
 clean:
 	rm -f thread.o app context.o race1 race2 leak
