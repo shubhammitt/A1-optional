@@ -26,6 +26,7 @@ void foo(void *ptr)
 	struct lock *l = (struct lock*)ptr;
 	int val;
 	acquire(l);
+
 	val = counter;
 	val++;
 	thread_yield();
@@ -38,6 +39,7 @@ void bar(void *ptr)
 {
 	struct lock *l = (struct lock*)ptr;
 	int val;
+
 	acquire(l);
 	val = counter;
 	val++;
@@ -55,6 +57,8 @@ int main(int argc, char *argv[])
 	create_thread(foo, &l);
 	create_thread(bar, &l);
 	wait_for_all();
+	
+	assert(counter == 2);
 	printf("main thread exiting.\n");
 
 	return 0;
