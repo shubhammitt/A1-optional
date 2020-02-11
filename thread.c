@@ -17,7 +17,7 @@ struct thread {
 struct thread *ready_list = NULL;     // ready list
 struct thread *cur_thread = NULL;     // current thread
 struct thread *thread_exited = NULL;
-struct lock *_lock = NULL;
+int threads_waiting = 0;
 // defined in context.s
 void context_switch(struct thread *prev, struct thread *next);
 
@@ -123,20 +123,15 @@ void thread_exit()
 // call schedule1 until ready_list is null
 void wait_for_all()
 {
-	while ( ready_list != NULL )
+	while ( ready_list != NULL || threads_waiting != 0)
 	{
 		thread_yield();
-		if( ready_list == NULL && _lock != NULL )
-		{
-			wakeup(_lock);
-		}
 	}
 }
 
 void sleep(struct lock *lock)
 {
-	if ( _lock == NULL )
-		_lock = lock;
+	threads_waiting ++;
 	struct thread *temp = lock -> wait_list;
 	if ( temp == NULL )
 		lock -> wait_list = cur_thread;
@@ -157,10 +152,9 @@ void sleep(struct lock *lock)
 
 void wakeup(struct lock *lock)
 {
-		if ( _lock == NULL)
-		_lock = lock;
 		if ( lock -> wait_list == NULL )
 			return;
+		threads_waiting --;
 		struct thread* t = lock -> wait_list;
 		lock -> wait_list = ((struct thread*)(lock -> wait_list)) -> next;
 
